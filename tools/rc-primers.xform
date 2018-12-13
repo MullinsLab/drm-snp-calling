@@ -1,0 +1,5 @@
+{{seq}}  = reverse {{seq}};
+{{seq}}  =~ tr/ATCG/TAGC/;
+{{id}}   =~ m{/1$}
+    ? {{id}} =~ s{/1$}{_rc/2}
+    : {{id}} =~ s{/2$}{_rc/1};

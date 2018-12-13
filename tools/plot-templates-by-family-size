@@ -1,0 +1,24 @@
+#!/usr/bin/Rscript
+# vim: set ft=r ts=2 sw=2:
+#
+# Plot percentage of templates accounted for by each family size.
+#
+library(ggplot2)
+library(scales)
+
+args   = commandArgs( trailingOnly = T )
+input  = args[1]
+output = args[2]
+threshold = args[3]
+
+data = read.table(input, header = T)
+
+png( file = output, width = 1024, height = 1024 )
+ggplot(data) +
+  geom_histogram(aes(x = size, y = tag_count / sum(tag_count)), stat = "identity", binwidth = 1) +
+  labs(
+    title = paste0("Observed families of size >= ", threshold, " in ", input),
+    x = "Tag family size (no. of reads per family), bin width = 1",
+    y = paste0("Percentage of observed templates (total = ", sum(data$tag_count), ")")) +
+  scale_y_continuous( labels = percent ) +
+  theme_grey(18)

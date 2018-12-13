@@ -1,0 +1,116 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use 5.018;
+
+use Getopt::Long::Descriptive;
+use List::Util qw< sum min max >;
+use Try::Tiny;
+use Bio::Cigar;
+use Statistics::Basic qw< median mode >;
+
+my ($opt, $usage) = describe_options(
+    '%c %o input.bam ref:N-M',
+    ['Report various stats about each read covering a region.'],
+    [],
+    ['baq-per-site', 'suppress normal output and output average BAQ scores per site'],
+    ['fasta|f=s',    'reference fasta, required for --baq-per-site'],
+    ['help',         'print usage message and exit' ],
+);
+print($usage->text), exit(not $opt->help)
+    if $opt->help or not @ARGV;
+
+die "--fasta required with --baq-per-site\n"
+    if $opt->baq_per_site and not $opt->fasta;
+
+my ($file, $region) = @ARGV;
+die "$file doesn't exist\n" unless -e $file;
+die "No region specified\n" unless $region;
+
+my @region = split /-/, $region =~ s/^.+://r;
+
+# ref:N -> ref:N-N
+$region[1] = $region[0] if not defined $region[1];
+
+die "Invalid region specified: $region\n"
+    unless 2 == grep { /^\d+$/ } @region;
+
+my $input;
+if ($opt->baq_per_site) {
+    open $input, '-|', qw(samtools mpileup --max-depth 100000 --min-BQ 0), '-f', $opt->fasta, '-r', $region, $file
+        or die "can't exec samtools: $!";
+    say "rpos rbase reads bqavg bqmedian bqmode";
+} else {
+    open $input, '-|', 'samtools', 'view', '-F', '0x4', $file, $region
+        or die "can't exec samtools: $!";
+    say "qpos len from_end mapq bases qavg qmin qmax baqavg baqmin baqmax";
+}
+
+while (<$input>) {
+    chomp;
+    if ($opt->baq_per_site) {
+        do_pileup($_);
+    } else {
+        do_read($_);
+    }
+}
+
+sub do_read {
+    my $line = shift;
+    my @F = split ' ', $line;
+
+    my ($start, $mapq, $cigar, $seq, $qual) = @F[ 3, 4, 5, 9, 10 ];
+    my $bq = (map { s/^BQ:Z://r } grep { /^BQ:Z:/ } @F[11 .. $#F])[0];
+
+    # Skip partial coverage
+    my @relative_region = map { $_ - $start + 1 } @region;
+    return if $relative_region[0] < 1;
+
+    try {
+        $cigar = Bio::Cigar->new($cigar);
+    } catch {
+        die "Couldn't parse cigar for line <$line>: $_";
+    };
+
+    # Skip partial coverage
+    return if $relative_region[1] > $cigar->reference_length;
+
+    # Skip deletions
+    my @qregion = map { scalar $cigar->rpos_to_qpos($_) } @relative_region;
+    return unless 2 == grep { defined } @qregion;
+
+    # Convert to (0-origin start, length)
+    $qregion[1] = $qregion[1] - $qregion[0] + 1;
+    $qregion[0]--;
+
+    my @quals = map { ord($_) - 33 } split "", substr($qual, $qregion[0], $qregion[1]);
+    my @baq   = map { ord($_) - 64 } split "", substr($bq,   $qregion[0], $qregion[1]);
+       @baq   = map { $quals[$_] - $baq[$_] } 0 .. $#baq; # convert the raw BAQ offsets to absolute qualities
+
+    @baq = (-1) x scalar @quals if not $bq;
+
+    say join " ",
+        @qregion,
+        $cigar->query_length - ($qregion[0] + $qregion[1]), # bases until end of read
+        $mapq,
+        substr($seq, $qregion[0], $qregion[1]),
+        sum(@quals) / @quals, min(@quals), max(@quals),
+        sum(@baq)   / @baq,   min(@baq),   max(@baq);
+}
+
+sub do_pileup {
+    my $line = shift;
+    my (undef, $rpos, $rbase, $reads, undef, $quals) = split ' ', $line;
+
+    die "length(quals) != $reads (reads)"
+        if length $quals != $reads;
+
+    my @quals  = map { ord($_) - 33 } split '', $quals;
+    my $mean   = sum(@quals) / @quals;
+    my $median = join ",", median(@quals)->query;
+    my $mode   = join ",", mode(@quals)->query;
+
+    say join " ", $rpos, $rbase, $reads, $mean, $median, $mode;
+}
+
+close $input or die "error closing pipe from samtools: $!";

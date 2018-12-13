@@ -1,0 +1,46 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use List::Util qw< sum >;
+
+my $before  = [ map { [$_, count_reads($_)] } @ARGV[0..1] ];
+my $after   = [ map { [$_, count_reads($_)] } @ARGV[2..3] ];
+my $orphans = [$ARGV[4], count_reads($ARGV[4])];
+
+my $total_before = total(@$before);
+my $total_after  = total(@$after);
+
+printf "%d before = %d forward + %d reverse\n",
+    $total_before,
+    map({ $_->[1] } @$before);
+
+printf "%d after = %d forward + %d reverse (= %0.2f%%)\n",
+    $total_after,
+    map({ $_->[1] } @$after),
+    $total_after / $total_before * 100;
+
+printf "%d single-end orphans (= %0.2f%%)\n",
+    $orphans->[1],
+    $orphans->[1] / $total_before * 100;
+
+my $discarded = $total_before - $total_after;
+printf "%d discarded, includes orphans (= %0.2f%%)\n",
+    $discarded,
+    $discarded / $total_before * 100;
+
+sub total {
+    sum map { $_->[1] } @_
+}
+
+sub count_reads {
+    my $fastq = shift;
+    die "No such file '$fastq' (or unreadable)\n"
+        unless -r $fastq;
+
+    my $lines = `zcat -f $fastq | wc -l`;
+    chomp $lines;
+
+    die "Malformed FastQ $fastq?  Lines ($lines) is not divisible by 4."
+        unless $lines % 4 == 0;
+    return $lines / 4;
+}

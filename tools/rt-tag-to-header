@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+import sys, re, argparse
+
+from gzip                import GzipFile
+from Bio.SeqIO.QualityIO import FastqGeneralIterator
+from itertools           import izip, chain
+from textwrap            import dedent
+
+__version__ = '1.0.0'
+
+class BetterFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
+
+def parseCommandArguments(*args):
+    parser = argparse.ArgumentParser(
+        description = dedent('''\
+            Extracts a fixed-length tag from the 5' end of reverse reads and
+            adds it to the header of each read in the pair.  The header is
+            renamed to a format suitable for using with ConsensusMaker.py from
+            the Loeb Lab's Duplex Sequencing pipeline.
+
+            Specify file suffixes of .gz to read/write gzipped FastQ.
+        '''),
+        epilog = dedent('''\
+            RT Tag to Header version %s
+            Copyright 2015 by Thomas Sibley <trsibley@uw.edu>
+            Mullins Lab
+            Department of Microbiology
+            University of Washington School of Medicine
+        ''' % __version__),
+        formatter_class = BetterFormatter)
+
+    for opt in ('fwd.fq', 'forward'), ('rev.fq', 'reverse'):
+        parser.add_argument("fastqIn",
+            action   = "append",
+            help     = "Input FastQ file of %s reads" % opt[1],
+            metavar  = opt[0])
+    for opt in ('fwd-tagged.fq', 'forward'), ('rev-tagged.fq', 'reverse'):
+        parser.add_argument("fastqOut",
+            action   = "append",
+            help     = "Output FastQ file of tagged %s reads" % opt[1],
+            metavar  = opt[0])
+
+    parser.add_argument("-l", "--length",
+        dest     = "tagLength",
+        type     = int,
+        required = True,
+        help     = "Length of the tag",
+        metavar  = "N")
+    parser.add_argument("--output-tags",
+        dest     = 'outputTags',
+        help     = "Write all good tags, one per line, to the specified file",
+        metavar  = 'file')
+    parser.add_argument("--output-bad-tags",
+        dest     = 'outputBadTags',
+        help     = "Write all bad tags, one per line, to the specified file",
+        metavar  = 'file')
+    parser.add_argument("--homopolymer-threshold",
+        dest     = "homopolymerThreshold",
+        type     = int,
+        help     = "Filter out tags with homopolymer runs >= length N",
+        metavar  = "N")
+    parser.add_argument("--report-every",
+        dest     = 'reportEvery',
+        type     = int,
+        default  = 100000,
+        help     = "Report progress every N read pairs",
+        metavar  = 'N')
+    return vars(parser.parse_args(*args))
+
+def openMaybeGzip(file, mode):
+    f = open(file, mode)
+    if re.search('\.gz$', file):
+        f = GzipFile(fileobj = f)
+    return f
+
+class RTTagToHeader:
+    def __init__(self, **args):
+        self.input  = [ openMaybeGzip(i, "r") for i in args['fastqIn']  ]
+        self.output = [ openMaybeGzip(o, "w") for o in args['fastqOut'] ]
+
+        (self.r1, self.r2) = [ FastqGeneralIterator(i) for i in self.input ]
+
+        self.count = {
+            'pairs':   0,
+            'badtags': 0,
+        }
+        self.reportEvery = args['reportEvery']
+        self.tagLength   = args['tagLength']
+
+        self.homopolymerThreshold = args['homopolymerThreshold']
+
+        if args['outputTags']:
+            self.outputTags = open(args['outputTags'], "w")
+        if args['outputBadTags']:
+            self.outputBadTags = open(args['outputBadTags'], "w")
+
+    def renameRead(self, id, tag):
+        ''' Rename read to match the pattern: original_name_no_spaces|tag/readnum '''
+        illumina = id.split(" ")[0].split(":")
+        if len(illumina) == 7:
+            # Illumina CASAVA >= 1.8
+            #   e.g. @EAS139:136:FC706VJ:2:2104:15343:197393 1:Y:18:ATCACG
+            readnum = id.split(" ")[1].split(":")[0]
+            return("%s|%s/%s" % (id.split(" ")[0].replace(' ', '_'), tag, readnum))
+
+        elif len(illumina) == 5:
+            # Illumina CASAVA < 1.8 (and perhaps >= 1.4?)
+            #   e.g. @HWUSI-EAS100R:6:73:941:1973#ATCGAT/1
+            id = id.replace(' ', '_')
+            return("%s|%s/%s" % (id.split("/")[0], tag, id.split("/")[1]))
+
+        else:
+            raise ValueError("Unknown read name format: %s" % id)
+
+    def isGoodTag(self, tag):
+        return len(tag) == self.tagLength \
+           and tag.isalpha() \
+           and tag.count('N') == 0 \
+           and (   not self.homopolymerThreshold \
+                or not re.search(r'([ATCG])\1{%d,}' % (self.homopolymerThreshold - 1), tag, re.IGNORECASE))
+
+    def run(self):
+        for reads in izip(self.r1, self.r2):
+            self.count['pairs'] += 1
+
+            # Extract tag from 5' end of reverse reads and modify both read
+            # headers to the format expected by the Loeb Lab's Duplex
+            # Sequencing pipeline (specifically, ConsensusMaker.py).  Drop
+            # pairs with Ns in the tag.
+
+            tag = reads[1][1][0:self.tagLength]
+
+            if (not self.isGoodTag(tag)):
+                self.count['badtags'] += 1
+                if self.outputBadTags:
+                    print >> self.outputBadTags, tag
+                continue
+
+            if self.outputTags:
+                print >> self.outputTags, tag
+
+            for (id, seq, qual), readNum in izip(reads, [0, 1]):
+                # Add tag to the read header
+                id = self.renameRead(id, tag)
+
+                # Adjust reverse read seq and quals to remove tag
+                if readNum == 1:
+                    seq  = seq[self.tagLength:]
+                    qual = qual[self.tagLength:]
+                self.output[readNum].write("@%s\n%s\n+\n%s\n" % (id, seq, qual))
+
+            if self.count['pairs'] % self.reportEvery == 0:
+                print >> sys.stderr, "Processed %d read pairs" % self.count['pairs']
+
+        for handle in chain(self.input, self.output):
+            handle.close()
+
+    def reportStats(self):
+        print "%i reads (%i pairs) processed" % (self.count['pairs'] * 2, self.count['pairs'])
+        print "%i (%0.1f%%) pairs with bad tag dropped" % (self.count['badtags'], self.count['badtags'] / float(self.count['pairs']) * 100)
+
+if __name__ == '__main__':
+    tagger = RTTagToHeader( **parseCommandArguments() )
+    tagger.run()
+    tagger.reportStats()

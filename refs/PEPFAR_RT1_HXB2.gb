@@ -1,0 +1,309 @@
+LOCUS       PEPFAR_RT1_HXB2          291 bp ss-RNA     linear   VRL 21-OCT-2002
+DEFINITION  Human immunodeficiency virus type 1 (HXB2), complete genome;
+            HIV1/HTLV-III/LAV reference genome.
+ACCESSION   K03455 REGION: 2637..2927
+VERSION     K03455.1  GI:1906382
+KEYWORDS    TAR protein; acquired immune deficiency syndrome; complete genome;
+            env protein; gag protein; long terminal repeat (LTR); pol protein;
+            polyprotein; proviral gene; reverse transcriptase; transactivator.
+SOURCE      Human immunodeficiency virus 1 (HIV-1)
+  ORGANISM  Human immunodeficiency virus 1
+            Viruses; Retro-transcribing viruses; Retroviridae;
+            Orthoretrovirinae; Lentivirus; Primate lentivirus group.
+REFERENCE   1  (sites)
+  AUTHORS   van Beveren,C.P., Coffin,J. and Hughes,S.
+  TITLE     Appendix B: HTLV-3/LAV genome
+  JOURNAL   (in) Weiss,R.L., Teich,N., Varmus,H. and Coffin,J. (Eds.);
+            RNA TUMOR VIRUSES, SECOND EDITION, 2, Vol. 2: 1102-1123;
+            Cold Spring Harbor Laboratory, Cold Spring Harbor (1985)
+REFERENCE   2  (sites)
+  AUTHORS   Allan,J.S., Coligan,J.E., Barin,F., McLane,M.F., Sodroski,J.G.,
+            Rosen,C.A., Haseltine,W.A., Lee,T.H. and Essex,M.
+  TITLE     Major glycoprotein antigens that induce antibodies in AIDS patients
+            are encoded by HTLV-III
+  JOURNAL   Science 228 (4703), 1091-1094 (1985)
+   PUBMED   2986290
+REFERENCE   3  (sites)
+  AUTHORS   Rosen,C.A., Sodroski,J.G. and Haseltine,W.A.
+  TITLE     The location of cis-acting regulatory sequences in the human T cell
+            lymphotropic virus type III (HTLV-III/LAV) long terminal repeat
+  JOURNAL   Cell 41 (3), 813-823 (1985)
+   PUBMED   2988790
+REFERENCE   4  (sites)
+  AUTHORS   Arya,S.K., Guo,C., Josephs,S.F. and Wong-Staal,F.
+  TITLE     Trans-activator gene of human T-lymphotropic virus type III
+            (HTLV-III)
+  JOURNAL   Science 229 (4708), 69-73 (1985)
+   PUBMED   2990040
+REFERENCE   5  (sites)
+  AUTHORS   Sodroski,J., Patarca,R., Rosen,C., Wong-Staal,F. and Haseltine,W.
+  TITLE     Location of the trans-activating region on the genome of human
+            T-cell lymphotropic virus type III
+  JOURNAL   Science 229 (4708), 74-77 (1985)
+   PUBMED   2990041
+REFERENCE   6  (sites)
+  AUTHORS   Rabson,A.B., Daugherty,D.F., Venkatesan,S., Boulukos,K.E.,
+            Benn,S.I., Folks,T.M., Feorino,P. and Martin,M.A.
+  TITLE     Transcription of novel open reading frames of AIDS retrovirus
+            during infection of lymphocytes
+  JOURNAL   Science 229 (4720), 1388-1390 (1985)
+   PUBMED   2994220
+REFERENCE   7  (sites)
+  AUTHORS   Allan,J.S., Coligan,J.E., Lee,T.H., McLane,M.F., Kanki,P.J.,
+            Groopman,J.E. and Essex,M.
+  TITLE     A new HTLV-III/LAV encoded antigen detected by antibodies from AIDS
+            patients
+  JOURNAL   Science 230 (4727), 810-813 (1985)
+   PUBMED   2997921
+REFERENCE   8  (sites)
+  AUTHORS   Rosen,C.A., Sodroski,J.G., Goh,W.C., Dayton,A.I., Lippke,J. and
+            Haseltine,W.A.
+  TITLE     Post-transcriptional regulation accounts for the trans-activation
+            of the human T-lymphotropic virus type III
+  JOURNAL   Nature 319 (6054), 555-559 (1986)
+   PUBMED   3003584
+REFERENCE   9  (sites)
+  AUTHORS   di Marzo Veronese,F., Copeland,T.D., DeVico,A.L., Rahman,R.,
+            Oroszlan,S., Gallo,R.C. and Sarngadharan,M.G.
+  TITLE     Characterization of highly immunogenic p66/p51 as the reverse
+            transcriptase of HTLV-III/LAV
+  JOURNAL   Science 231 (4743), 1289-1291 (1986)
+   PUBMED   2418504
+REFERENCE   10 (sites)
+  AUTHORS   Kramer,R.A., Schaber,M.D., Skalka,A.M., Ganguly,K., Wong-Staal,F.
+            and Reddy,E.P.
+  TITLE     HTLV-III gag protein is processed in yeast cells by the virus
+            pol-protease
+  JOURNAL   Science 231 (4745), 1580-1584 (1986)
+   PUBMED   2420008
+REFERENCE   11 (sites)
+  AUTHORS   Dayton,A.I., Sodroski,J.G., Rosen,C.A., Goh,W.C. and Haseltine,W.A.
+  TITLE     The trans-activator gene of the human T cell lymphotropic virus
+            type III is required for replication
+  JOURNAL   Cell 44 (6), 941-947 (1986)
+   PUBMED   2420471
+REFERENCE   12 (sites)
+  AUTHORS   Lee,T.H., Coligan,J.E., Allan,J.S., McLane,M.F., Groopman,J.E. and
+            Essex,M.
+  TITLE     A new HTLV-III/LAV protein encoded by a gene found in cytopathic
+            retroviruses
+  JOURNAL   Science 231 (4745), 1546-1549 (1986)
+   PUBMED   3006243
+REFERENCE   13 (sites)
+  AUTHORS   Sodroski,J., Goh,W.C., Rosen,C., Tartar,A., Portetelle,D., Burny,A.
+            and Haseltine,W.
+  TITLE     Replicative and cytopathic potential of HTLV-III/LAV with sor gene
+            deletions
+  JOURNAL   Science 231 (4745), 1549-1553 (1986)
+   PUBMED   3006244
+REFERENCE   14 (sites)
+  AUTHORS   Kan,N.C., Franchini,G., Wong-Staal,F., DuBois,G.C., Robey,W.G.,
+            Lautenberger,J.A. and Papas,T.S.
+  TITLE     Identification of HTLV-III/LAV sor gene product and detection of
+            antibodies in human sera
+  JOURNAL   Science 231 (4745), 1553-1555 (1986)
+   PUBMED   3006245
+REFERENCE   15 (sites)
+  AUTHORS   Arya,S.K. and Gallo,R.C.
+  TITLE     Three novel genes of human T-lymphotropic virus type III: immune
+            reactivity of their products with sera from acquired immune
+            deficiency syndrome patients
+  JOURNAL   Proc. Natl. Acad. Sci. U.S.A. 83 (7), 2209-2213 (1986)
+   PUBMED   3008154
+REFERENCE   16 (sites)
+  AUTHORS   Jones,K.A., Kadonaga,J.T., Luciw,P.A. and Tjian,R.
+  TITLE     Activation of the AIDS retrovirus promoter by the cellular
+            transcription factor, Sp1
+  JOURNAL   Science 232 (4751), 755-759 (1986)
+   PUBMED   3008338
+REFERENCE   17 (sites)
+  AUTHORS   Sodroski,J., Goh,W.C., Rosen,C., Dayton,A., Terwilliger,E. and
+            Haseltine,W.
+  TITLE     A second post-transcriptional trans-activator gene required for
+            HTLV-III replication
+  JOURNAL   Nature 321 (6068), 412-417 (1986)
+   PUBMED   3012355
+REFERENCE   18 (sites)
+  AUTHORS   Starcich,B.R., Hahn,B.H., Shaw,G.M., McNeely,P.D., Modrow,S.,
+            Wolf,H., Parks,E.S., Parks,W.P., Josephs,S.F., Gallo,R.C. and
+            Wong-Staal,F.
+  TITLE     Identification and characterization of conserved and variable
+            regions in the envelope gene of HTLV-III/LAV, the retrovirus of
+            AIDS
+  JOURNAL   Cell 45 (5), 637-648 (1986)
+   PUBMED   2423250
+REFERENCE   19 (sites)
+  AUTHORS   Willey,R.L., Rutledge,R.A., Dias,S., Folks,T., Theodore,T.,
+            Buckler,C.E. and Martin,M.A.
+  TITLE     Identification of conserved and divergent domains within the
+            envelope gene of the acquired immunodeficiency syndrome retrovirus
+  JOURNAL   Proc. Natl. Acad. Sci. U.S.A. 83 (14), 5038-5042 (1986)
+   PUBMED   3014529
+REFERENCE   20 (sites)
+  AUTHORS   Feinberg,M.B., Jarrett,R.F., Aldovini,A., Gallo,R.C. and
+            Wong-Staal,F.
+  TITLE     HTLV-III expression and production involve complex regulation at
+            the levels of splicing and translation of viral RNA
+  JOURNAL   Cell 46 (6), 807-817 (1986)
+   PUBMED   3638988
+REFERENCE   21 (sites)
+  AUTHORS   Lightfoote,M.M., Coligan,J.E., Folks,T.M., Fauci,A.S., Martin,M.A.
+            and Venkatesan,S.
+  TITLE     Structural characterization of reverse transcriptase and
+            endonuclease polypeptides of the acquired immunodeficiency syndrome
+            retrovirus
+  JOURNAL   J. Virol. 60 (2), 771-775 (1986)
+   PUBMED   2430111
+REFERENCE   22 (sites)
+  AUTHORS   Terwilliger,E., Sodroski,J.G., Rosen,C.A. and Haseltine,W.A.
+  TITLE     Effects of mutations within the 3' orf open reading frame region of
+            human T-cell lymphotropic virus type III (HTLV-III/LAV) on
+            replication and cytopathogenicity
+  JOURNAL   J. Virol. 60 (2), 754-760 (1986)
+   PUBMED   3490583
+REFERENCE   23 (sites)
+  AUTHORS   Wright,C.M., Felber,B.K., Paskalis,H. and Pavlakis,G.N.
+  TITLE     Expression and characterization of the trans-activator of
+            HTLV-III/LAV virus
+  JOURNAL   Science 234 (4779), 988-992 (1986)
+   PUBMED   3490693
+REFERENCE   24 (sites)
+  AUTHORS   Patarca,R., Heath,C., Goldenberg,G.J., Rosen,C.A., Sodroski,J.G.,
+            Haseltine,W.A. and Hansen,U.M.
+  TITLE     Transcription directed by the HIV long terminal repeat in vitro
+  JOURNAL   AIDS Res. Hum. Retroviruses 3 (1), 41-55 (1987)
+   PUBMED   3040054
+REFERENCE   25 (bases 1 to 291)
+  AUTHORS   Ratner,L., Fisher,A., Jagodzinski,L.L., Mitsuya,H., Liou,R.S.,
+            Gallo,R.C. and Wong-Staal,F.
+  TITLE     Complete nucleotide sequences of functional clones of the AIDS
+            virus
+  JOURNAL   AIDS Res. Hum. Retroviruses 3 (1), 57-69 (1987)
+   PUBMED   3040055
+REFERENCE   26 (sites)
+  AUTHORS   Wong-Staal,F., Chanda,P.K. and Ghrayeb,J.
+  TITLE     Human immunodeficiency virus: the eighth gene
+  JOURNAL   AIDS Res. Hum. Retroviruses 3 (1), 33-39 (1987)
+   PUBMED   3476127
+REFERENCE   27 (sites)
+  AUTHORS   Modrow,S., Hahn,B.H., Shaw,G.M., Gallo,R.C., Wong-Staal,F. and
+            Wolf,H.
+  TITLE     Computer-assisted analysis of envelope protein sequences of seven
+            human immunodeficiency virus isolates: prediction of antigenic
+            epitopes in conserved and variable regions
+  JOURNAL   J. Virol. 61 (2), 570-578 (1987)
+   PUBMED   2433466
+REFERENCE   28 (sites)
+  AUTHORS   Goh,W.C., Sodroski,J.G., Rosen,C.A. and Haseltine,W.A.
+  TITLE     Expression of the art gene protein of human T-lymphotropic virus
+            type III (HTLV-III/LAV) in bacteria
+  JOURNAL   J. Virol. 61 (2), 633-637 (1987)
+   PUBMED   3543401
+REFERENCE   29 (sites)
+  AUTHORS   Muesing,M.A., Smith,D.H. and Capon,D.J.
+  TITLE     Regulation of mRNA accumulation by a human immunodeficiency virus
+            trans-activator protein
+  JOURNAL   Cell 48 (4), 691-701 (1987)
+   PUBMED   3643816
+REFERENCE   30 (sites)
+  AUTHORS   Nabel,G. and Baltimore,D.
+  TITLE     An inducible transcription factor activates expression of human
+            immunodeficiency virus in T cells
+  JOURNAL   Nature 326 (6114), 711-713 (1987)
+   PUBMED   3031512
+  REMARK    Erratum:[Nature 1990 Mar 8;344(6262):178]
+REFERENCE   31 (sites)
+  AUTHORS   Fisher,A.G., Ensoli,B., Ivanoff,L., Chamberlain,M., Petteway,S.,
+            Ratner,L., Gallo,R.C. and Wong-Staal,F.
+  TITLE     The sor gene of HIV-1 is required for efficient virus transmission
+            in vitro
+  JOURNAL   Science 237 (4817), 888-893 (1987)
+   PUBMED   3497453
+REFERENCE   32 (sites)
+  AUTHORS   Ido,E., Han,H.P., Kezdy,F.J. and Tang,J.
+  TITLE     Kinetic studies of human immunodeficiency virus type 1 protease and
+            its active-site hydrogen bond mutant A28S
+  JOURNAL   J. Biol. Chem. 266 (36), 24359-24366 (1991)
+   PUBMED   1761538
+COMMENT     On Mar 25, 1997 this sequence version replaced gi:327742.
+            [6]  sites; tat mRNA and other transcript boundaries. [7]  sites;
+            tat mRNA.
+            [8]  sites; mRNA splice sites.
+            [9]  sites; 27K antigen cds.
+            [5]  sites; gp160 and gp120 coding sequences.
+            [1]  sites; regulatory sequences in the LTR.
+            [(in) Weiss,R., Teich,N., Varmus,H. and Coffin,J. (Eds.);RNA Tumor
+            Viruses, Secon]  review; bases 1 to 9718.
+            [15]  sites; trans-activator function and TAR sequence. [19]
+            sites; pol coding sequence.
+            [22]  sites; 23K sor gene product.
+            [23]  sites; pol NH2-terminal region.
+            [20]  sites; sor 23K protein.
+            [21]  sites; sor 23K protein.
+            [24]  sites; Sp1 binding sites in the promoter region. [17]  sites;
+            acceptor and donor splice sites for tat and 27K. [10]  sites;
+            deletion mutants in the tat gene.
+            [18]  sites; env gene conserved/varable regions; separate entries.
+            [16]  sites; trs cds boundaries.
+            [12]  sites; trs cds boundaries.
+            [11]  sites; env gene conserved/variable regions; separate entries.
+            [26]  sites; tar or transactivator target.
+            [13]  sites; 3' orf mutations.
+            [14]  sites; pol p34 terminus.
+            [31]  sites; promoter, TAR, tat-III mutants.
+            [32]  sites; envelope protein epitopes.
+            [33]  sites; trs/art protein.
+            [34]  sites; inducible enhancer element.
+            [27]  revises [30].
+            [29]  sites; long terminal repeat.
+            [28]  sites; R orf.
+            [35]  sites; sor.
+            Sequence for [25] kindly provided in computer-readable form by
+            L.Ratner, 19-AUG-1986.
+            The HXB2 sequence is being used as a reference genome for all the
+            HIV entries because it has been derived from a demonstrably
+            infectious clone.  Hence not all of the 'sites' references above
+            were concerned with this isolate.
+FEATURES             Location/Qualifiers
+     source          1..291
+                     /organism="Human immunodeficiency virus 1"
+                     /proviral
+                     /mol_type="genomic RNA"
+                     /isolate="HXB2"
+                     /db_xref="taxon:11676"
+                     /note="HTLV-III/LAV"
+     mRNA            <1..>291
+                     /product="HXB2 genomic mRNA"
+     prim_transcript <1..>291
+                     /note="tat, trs, 27K subgenomic mRNA"
+     intron          <1..>291
+                     /note="tat, trs, 27K mRNA intron 1"
+     CDS             <1..>291
+                     /note="pol polyprotein (NH2-terminus uncertain)"
+                     /codon_start=1
+                     /protein_id="AAB50259.1"
+                     /db_xref="GI:1906384"
+                     /translation="MSLPGRWKPKMIGGIGGFIKVRQYDQILIEICGHKAIGTVLVGP
+                     TPVNIIGRNLLTQIGCTLNFPISPIETVPVKLKPGMDGPKVKQWPLTEEKIKALVEIC
+                     TEMEKEGKISKIGPENPYNTPVFAIKKKDSTKWRKLVDFRELNKRTQDFWEVQLGIPH
+                     PAGLKKKKSVTVLDVGDAYFSVPLDEDFRKYTAFTIPSINNETPGIRYQYNVLPQGWK
+                     GSPAIFQSSMTKILEPFRKQNPDIVIYQYMDDLYVGSDLEIGQHRTKIEELRQHLLRW
+                     GLTTPDKKHQKEPPFLWMGYELHPDKWTVQPIVLPEKDSWTVNDIQKLVGKLNWASQI
+                     YPGIKVRQLCKLLRGTKALTEVIPLTEEAELELAENREILKEPVHGVYYDPSKDLIAE
+                     IQKQGQGQWTYQIYQEPFKNLKTGKYARMRGAHTNDVKQLTEAVQKITTESIVIWGKT
+                     PKFKLPIQKETWETWWTEYWQATWIPEWEFVNTPPLVKLWYQLEKEPIVGAETFYVDG
+                     AANRETKLGKAGYVTNRGRQKVVTLTDTTNQKTELQAIYLALQDSGLEVNIVTDSQYA
+                     LGIIQAQPDQSESELVNQIIEQLIKKEKVYLAWVPAHKGIGGNEQVDKLVSAGIRKVL
+                     FLDGIDKAQDEHEKYHSNWRAMASDFNLPPVVAKEIVASCDKCQLKGEAMHGQVDCSP
+                     GIWQLDCTHLEGKVILVAVHVASGYIEAEVIPAETGQETAYFLLKLAGRWPVKTIHTD
+                     NGSNFTGATVRAACWWAGIKQEFGIPYNPQSQGVVESMNKELKKIIGQVRDQAEHLKT
+                     AVQMAVFIHNFKRKGGIGGYSAGERIVDIIATDIQTKELQKQITKIQNFRVYYRDSRN
+                     PLWKGPAKLLWKGEGAVVIQDNSDIKVVPRRKAKIIRDYGKQMAGDDCVASRQDED"
+ORIGIN      
+        1 aaaataaaag cattagtaga aatttgtaca gagatggaaa aggaagggaa aatttcaaaa
+       61 attgggcctg aaaatccata caatactcca gtatttgcca taaagaaaaa agacagtact
+      121 aaatggagaa aattagtaga tttcagagaa cttaataaga gaactcaaga cttctgggaa
+      181 gttcaattag gaataccaca tcccgcaggg ttaaaaaaga aaaaatcagt aacagtactg
+      241 gatgtgggtg atgcatattt ttcagttccc ttagatgaag acttcaggaa g
+//
+

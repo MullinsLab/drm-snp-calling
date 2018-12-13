@@ -1,0 +1,24 @@
+#!/usr/bin/Rscript
+# vim: set ft=r ts=2 sw=2:
+#
+# Plot family size of observed templates.
+#
+library(ggplot2)
+library(scales)
+
+args   = commandArgs( trailingOnly = T )
+input  = args[1]
+output = args[2]
+threshold = args[3]
+
+data = read.table(input, col.names=c("size", "proportion"))
+
+png( file = output, width = 1024, height = 1024 )
+ggplot(data) +
+  geom_histogram(aes(x = size, y = proportion), stat = "identity", binwidth = 1) +
+  labs(
+    title = paste0("Observed families of size >= ", threshold, " in ", input),
+    x = "Tag family size (no. of reads per family), bin width = 1",
+    y = "Percentage of total reads") +
+  scale_y_continuous( labels = percent ) +
+  theme_grey(18)

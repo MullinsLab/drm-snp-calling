@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/MullinsLab/Trim5Primer.git
+	branch = master
+	commit = cd6b5f983d7f047785df606603831d79830ae3a0
+	parent = 65bbe923d17c05b15dd0f29170eb9ccae9a5868b
+	cmdver = 0.2.0

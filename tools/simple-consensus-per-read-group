@@ -1,0 +1,189 @@
+#!/usr/bin/env python
+import sys, re, argparse
+
+from textwrap import dedent
+from pysam    import AlignmentFile, qualities_to_qualitystring
+
+__version__ = '1.2.1'
+
+class SimpleConsensus:
+    def __init__(self, **args):
+        self.input              = AlignmentFile( args['inputFile'] )
+        self.threshold          = args['threshold']
+        self.minDepth           = args['minDepth']
+        self.maxDepth           = args['maxDepth']
+        self.ignoreReadGroups   = args['ignoreReadGroups']
+        self.missingQuality     = args['missingQuality']
+        self.callAmbiguousBases = args['ambiguous']
+        self.ambiguity = {
+                "A":    "A",
+                "C":    "C",
+                "G":    "G",
+                "T":    "T",
+                "AC":   "M",
+                "AG":   "R",
+                "AT":   "W",
+                "CG":   "S",
+                "CT":   "Y",
+                "GT":   "K",
+                "ACG":  "V",
+                "ACT":  "H",
+                "AGT":  "D",
+                "CGT":  "B",
+                "ACGT": "N"
+                }
+
+    def run(self):
+        pileup = self.input.pileup( stepper = 'all', max_depth = self.maxDepth )
+        groups = {}
+
+        for site in pileup:
+            rpos = site.reference_pos
+
+            for read in site.pileups:
+                qpos = read.query_position
+                alignment = read.alignment
+                if not self.ignoreReadGroups:
+                    try:
+                        rg = alignment.get_tag('RG')
+                    except KeyError:
+                        # No read group for this read?!
+                        continue
+                else:
+                    rg = 'Consensus'
+
+                if qpos is None:
+                    continue
+
+                if rg not in groups:
+                    groups[rg] = {}
+                if rpos not in groups[rg]:
+                    groups[rg][rpos] = { 'bases': [], 'quals': [] }
+
+                groups[rg][rpos]['bases'].append( alignment.query_sequence[qpos] )
+                groups[rg][rpos]['quals'].append( alignment.query_qualities[qpos] if alignment.query_qualities else self.missingQuality )
+
+        for rg in groups:
+            sequence = []
+            quality  = []
+            for rpos in range(min(groups[rg]), max(groups[rg]) + 1):
+                if rpos not in groups[rg]:
+                    sequence.append('N')
+                    quality.append(0)
+                    continue
+
+                bases = groups[rg][rpos]['bases']
+                quals = groups[rg][rpos]['quals']
+
+                if len(bases) < self.minDepth:
+                    sequence.append('N')
+                    quality.append(0)
+                    continue
+
+                # count occurances of bases
+                counts = {}
+                for base in bases:
+                    counts[base] = counts.get(base, 0) + 1
+
+                # calculate frequencies of bases
+                freqs = dict([ (base, counts[base] / float(len(bases))) for base in counts ])
+
+                most_common_base = max(freqs, key=lambda k: freqs[k])
+
+                if freqs[most_common_base] >= self.threshold:
+                    sequence.append(most_common_base)
+                    quality.append(sum(quals) // len(quals)) # XXX: can this be better?
+                elif (not self.callAmbiguousBases) or most_common_base is 'N':
+                    sequence.append('N')
+                    quality.append(0) # XXX: can this be better?
+                else:
+                    nts = sorted(list(freqs.keys()))
+                    if 'N' in nts:
+                        nts.remove('N')
+                    ambig = ''.join(nts)
+                    sequence.append(self.ambiguity[ambig])
+                    quality.append(sum(quals) // len(quals)) # XXX: can this be better?
+
+            # Output FastQ
+            print("@%s\n%s\n+\n%s" % (rg, ''.join(sequence), qualities_to_qualitystring(quality)))
+
+class BetterFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
+
+def parseCommandArguments(*args):
+    parser = argparse.ArgumentParser(
+        description = dedent('''\
+            Constructs a simple (dumb) consensus sequence for each read group
+            (RG) in a BAM file.
+
+            Base qualities are averaged for each site.  Percent identity
+            thresholding is done to call a consensus base.  If no base reaches
+            the threshold, an N is called.
+
+            Consensus sequences span only the reference bases between the first
+            and last covered base.
+
+            Input must be a BAM file indexed with `samtools index`.  Output is
+            FastQ.
+        '''),
+        epilog = dedent('''\
+            version %s
+            Copyright 2015 by Thomas Sibley <trsibley@uw.edu>
+            Mullins Lab <https://mullinslab.microbiol.washington.edu>
+            Department of Microbiology
+            University of Washington
+        ''' % __version__),
+        formatter_class = BetterFormatter)
+
+    parser.add_argument("inputFile",
+        help    = "SAM/BAM file of aligned reads",
+        metavar = "input.bam")
+
+    parser.add_argument("-t", "--threshold",
+        dest     = "threshold",
+        type     = float,
+        default  = 0.7,
+        help     = "Frequency threshold below which a base is not called",
+        metavar  = "x")
+
+    parser.add_argument("-d", "--min-depth",
+        dest     = "minDepth",
+        type     = int,
+        default  = 1,
+        help     = "Read depth below which a base is not called",
+        metavar  = "n")
+
+    parser.add_argument("--max-depth",
+        dest     = "maxDepth",
+        type     = int,
+        default  = 8000,
+        help     = "Maximum number of reads considered for a single consensus position",
+        metavar  = "n")
+
+    parser.add_argument("-a", "--ambiguous",
+        dest     = "ambiguous",
+        action   = "store_true",
+        help     = "Call bases below threshold with ambiguity codes")
+
+    parser.add_argument("--ignore-read-groups",
+        dest     = "ignoreReadGroups",
+        action   = "store_true",
+        help     = "Ignore read groups and lump all reads into one consensus")
+
+    parser.add_argument("--missing-quality",
+        dest     = "missingQuality",
+        type     = int,
+        default  = 0,
+        help     = "Quality score to use for bases missing a quality score",
+        metavar  = "q")
+
+    parser.set_defaults(
+        ambiguous        = False,
+        ignoreReadGroups = False
+    )
+
+    return vars(parser.parse_args(*args))
+
+if __name__ == '__main__':
+    app = SimpleConsensus( **parseCommandArguments() )
+    app.run()

@@ -1,0 +1,16 @@
+#!/bin/bash
+if [ -z $1 ]; then
+    echo "usage: `basename $0` <GenBank accession or GI number> [begin [end]]"
+    exit 1
+fi
+echo -n "Fetching GenBank $1... " > /dev/stderr
+curl -s --get http://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi \
+	-d tool=portal          \
+	-d sendto=on            \
+	-d 'log$=seqview'       \
+	-d db=nuccore           \
+	-d dopt=gbwithparts     \
+	-d val=$1               \
+	-d from=${2:-begin}     \
+	-d to=${3:-end}
+echo OK > /dev/stderr

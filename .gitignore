@@ -1,0 +1,16 @@
+/trials/
+*.fai
+*.bai
+*.bam
+*.dict
+*_fastqc.html
+*.fasta.*
+/cache/
+/tools/snpEff/data/
+snpEff_genes.txt
+snpEff_summary.html
+*-drm-snps.tsv
+/raw/
+/reads/
+/results/
+/summary/

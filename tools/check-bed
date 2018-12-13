@@ -1,0 +1,68 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use 5.018;
+use FindBin qw< $Script >;
+use Bio::Tools::CodonTable;
+
+my ($bed, $fasta) = @ARGV;
+die "usage: $Script file.bed ref.fasta\n"
+    unless $bed and $fasta;
+
+my $codon_table = Bio::Tools::CodonTable->new;
+
+open my $bed_fh, '<', $bed
+    or die "open($bed) failed: $!";
+
+open my $codons, '-|', qw(bedtools getfasta -fi), $fasta, qw(-bed), $bed, qw(-name -tab -fo /dev/stdout)
+    or die "opening pipe to bedtools getfasta failed: $!";
+
+while (<$bed_fh>) {
+    next if /^#/;
+    chomp;
+
+    # Check for position-based problems
+    my ($ref, $start, $stop, $name) = split /\t/;
+    die "$Script: Region $name, or it's reference seq, does NOT start on a codon boundary at $bed line $.\n"
+        unless $start % 3 == 0;
+    die "$Script: Region $name is not 3 bases long at $bed line $.\n"
+        unless $stop - $start == 3;
+
+    # Check actual codon content vs. name
+    my ($codon_name, $codon) = do {
+        local $.;
+        my $line = <$codons>
+            // die "Exhausted bedtools getfasta output!";
+        chomp $line;
+        split /\t/, $line, 2;
+    };
+    die "$Script: mismatched bed region name ($name) and codon name ($codon_name)"
+        unless $name eq $codon_name;
+
+    my $aa = $codon_table->translate($codon)
+        or die "$Script: unknown codon $codon";
+
+    die "$Script: BED region name $name doesn't match reference amino acid $aa (ref seq $codon) at $bed line $.\n"
+        unless ref_aa_matches_mutation_name($ref, $name, $aa);
+}
+
+die "Didn't exhaust bedtools getfasta output!\n", join("\n", map { "\t$_" } <$codons>)
+    unless eof $codons;
+
+sub ref_aa_matches_mutation_name {
+    my ($ref, $name, $aa) = @_;
+
+    # Some of the subtype references are mutated relative to the HXB2-based
+    # amino acid mutation name.
+    state $mutated_reference = {
+        'kenya_subA_NoPrimers' => {
+            'V179L/D/F/T' => 'I179L/D/F/T',
+        },
+    };
+    $name = $mutated_reference->{$ref}{$name}
+        if $mutated_reference->{$ref}{$name};
+
+    return 1 if $name =~ /insertion/i;
+    return 1 if $name =~ /^([A-Z]\/)*$aa(\/[A-Z])*\d+/; # A270I or J/A270I, for example
+    return 0;
+}

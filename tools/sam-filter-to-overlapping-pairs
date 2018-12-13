@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Bio::Cigar;
+
+# Expects headerless SAM input, such as that from `samtools view`
+while (<>) {
+    my @F = split ' ';
+    my ($cigar, $pos, $mpos) = @F[5,3,7];
+
+    die "pos ($pos) or mpos ($mpos) is 0?!"
+        unless $pos and $mpos;
+
+    $cigar = Bio::Cigar->new($cigar);
+    print if $pos + $cigar->reference_length - 1 > $mpos;
+}

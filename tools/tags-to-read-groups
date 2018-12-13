@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+import sys, re, argparse
+
+from textwrap import dedent
+from pysam import AlignmentFile
+
+__version__ = '1.0.0'
+
+class BetterFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+    pass
+
+def parseCommandArguments(*args):
+    parser = argparse.ArgumentParser(
+        description = dedent('''\
+            Splits reads into read groups (RG) by a sequencing tag encoded into
+            the read names.
+
+            A single RG must be defined for the input reads for use as a RG
+            template.  Each tag gets a new RG with an ID of itself and a SM
+            (sample) suffixed with '|TAG'.
+
+            Read names should end with a pipe (|) and then the tag.  This
+            matches the read names produced by rt-tag-to-header and the Loeb
+            Lab's Duplex Sequencing pipeline's tag_to_header.py.
+
+            Input may be SAM or BAM.  Output is BAM.
+        '''),
+        epilog = dedent('''\
+            Tags to Read Groups version %s
+            Copyright 2015 by Thomas Sibley <trsibley@uw.edu>
+            Mullins Lab
+            Department of Microbiology
+            University of Washington School of Medicine
+        ''' % __version__),
+        formatter_class = BetterFormatter)
+
+    parser.add_argument("tagFile",
+        help    = "Plain text file of all expected/desired tags, one per line.  Any read with a tag not present in this file will be skipped.",
+        metavar = "tags.txt")
+
+    parser.add_argument("inputFile",
+        help    = "SAM/BAM file of aligned reads; read names must end with '|TAG' and a single RG must be present to act as the template for new RGs",
+        metavar = "input.bam")
+
+    parser.add_argument("outputFile",
+        help    = "BAM file for output reads, with new read groups for each tag",
+        metavar = "output.bam")
+
+    return vars(parser.parse_args(*args))
+
+class TagsToReadGroups:
+    def __init__(self, **args):
+        with open(args['tagFile'], "r") as tags:
+            self.tagSet = set([tag.strip() for tag in tags ])
+
+        self.input = AlignmentFile(args['inputFile'])
+
+        # Setup new RG headers for output file
+        header = self.input.header
+
+        if len(header.get('RG', [])) != 1:
+            raise ValueError("Exactly one RG header must be present in the input file")
+
+        # Each tag gets a read group, like:
+        #   ID=AATTGGCC SM=original-sample|AATTGGCC ...
+        rg_template = header['RG'].pop()
+        for tag in sorted(self.tagSet):
+            rg = rg_template.copy()
+            rg['ID'] = tag
+            rg['SM'] = rg['SM'] + '|' + tag
+            header['RG'].append(rg)
+
+        self.output = AlignmentFile(args['outputFile'], "wb", header = header)
+
+        self.tagsSeen = set()
+        self.count    = {
+            'read':    0,
+            'written': 0,
+            'notag':   0
+        }
+
+    def run(self):
+        for read in self.input:
+            self.count['read'] += 1
+
+            # Can we find a plausible tag?
+            match = re.search(r'\|([ATCG]+)$', read.query_name)
+            if match:
+                tag = match.group(1)
+                self.tagsSeen.add(tag)
+                if tag not in self.tagSet:
+                    continue
+            else:
+                self.count['notag'] += 1
+                continue
+
+            # Set the read's RG to the tag (which is a RG-ID in the header)
+            read.set_tag('RG', tag)
+            self.output.write(read)
+            self.count['written'] += 1
+
+        self.input.close()
+        self.output.close()
+
+    def reportStats(self):
+        print "%7i reads input" % (self.count['read'])
+        print "%7i reads output" % (self.count['written'])
+        print "%7i reads without parseable tag" % (self.count['notag'])
+        print "%7i tags in tag file" % (len(self.tagSet))
+        print "%7i tags observed in reads (%0.1f%% of tag file)" % (
+            len(self.tagsSeen),
+            len(self.tagsSeen) / float(len(self.tagSet)) * 100)
+        print "%7i tags observed but not in tag file - skipped" % (len(self.tagsSeen - self.tagSet))
+        print "%7i tags in tag file but not observed" % (len(self.tagSet - self.tagsSeen))
+
+if __name__ == '__main__':
+    app = TagsToReadGroups( **parseCommandArguments() )
+    app.run()
+    app.reportStats()

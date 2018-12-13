@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Bio::SeqIO;
+use Bio::SeqFeature::Generic;
+
+my $fasta   = Bio::SeqIO->newFh( -fh => \*ARGV,   -format => 'fasta' );
+my $genbank = Bio::SeqIO->newFh( -fh => \*STDOUT, -format => 'genbank' );
+
+while (my $seq = <$fasta>) {
+    # A CDS is required for SnpEff
+    $seq->add_SeqFeature(
+        Bio::SeqFeature::Generic->new(
+            -start        => 1,
+            -end          => $seq->length,
+            -primary      => "CDS",
+            -display_name => "Pol",
+            -tag          => {
+                gene        => "pol",
+                product     => "Pol",
+                codon_start => 1,
+                translation => $seq->translate->seq,
+            },
+        )
+    );
+    print { $genbank } $seq;
+}

@@ -1,0 +1,6 @@
+#!/bin/sh
+repo=`dirname $0`/..
+run=$1
+recs-fromcsv --header $repo/amplicon-ref-by-run.csv \
+    | recs-grep "{{run}} eq q[$run]" \
+    | recs-eval '{{reference}}'
